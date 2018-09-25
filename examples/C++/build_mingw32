@@ -1,0 +1,28 @@
+#! /bin/sh
+#
+#   Examples build helper for mingw32 on Windows
+#   Syntax: sh.exe build_mingw32 all | clean
+#
+ZMQOPTS='-lzmq'
+if pkg-config libzmq --exists; then
+    ZMQOPTS="$(pkg-config libzmq --cflags --libs) -std=c++11"
+fi
+if [ /$1/ = /all/ ]; then
+    echo "Building C++ examples..."
+    for MAIN in `egrep -l "main \(" *.cpp`; do
+        echo "$MAIN"
+        sh.exe ./c -p -l $ZMQOPTS -li ./include -ll ./lib -q $MAIN
+    done
+elif [ /$1/ = /clean/ ]; then
+    echo "Cleaning C++ examples directory..."
+    rm -f *.opp *.lst core
+    for MAIN in `egrep -l "main \(" *.cpp`; do
+        rm -f `basename $MAIN .cpp`
+    done
+elif [ -f $1.cpp ]; then
+    echo "$1"
+    sh.exe ./c -p -l $ZMQOPTS -li  ./include -ll ./lib  -q $1
+else
+    echo "syntax: build all | clean"
+fi
+

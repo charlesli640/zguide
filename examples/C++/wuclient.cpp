@@ -14,13 +14,16 @@ int main (int argc, char *argv[])
     zmq::context_t context (1);
 
     //  Socket to talk to server
-    std::cout << "Collecting updates from weather server...\n" << std::endl;
+    std::cout << "0. Collecting updates from weather server...\n" << std::endl;
     zmq::socket_t subscriber (context, ZMQ_SUB);
-    subscriber.connect("tcp://localhost:5556");
+    const char * pubserver = (argc > 1) ? argv[1] : "tcp://localhost:5556";
+    std::cout << "1. pub server: " << pubserver << std::endl;
+    subscriber.connect(pubserver);
+    subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
 
     //  Subscribe to zipcode, default is NYC, 10001
-	const char *filter = (argc > 1)? argv [1]: "10001 ";
-    subscriber.setsockopt(ZMQ_SUBSCRIBE, filter, strlen (filter));
+    //const char *filter = (argc > 1)? argv [1]: "10001 ";
+    //subscriber.setsockopt(ZMQ_SUBSCRIBE, filter, strlen (filter));
 
     //  Process 100 updates
     int update_nbr;
@@ -31,14 +34,14 @@ int main (int argc, char *argv[])
         int zipcode, temperature, relhumidity;
 
         subscriber.recv(&update);
+        //std::istringstream iss(static_cast<char*>(update.data()));
+        std::cout << "recv: " << strlen(static_cast<char*>(update.data())) << std::endl;
+		//iss >> zipcode >> temperature >> relhumidity ;
 
-        std::istringstream iss(static_cast<char*>(update.data()));
-		iss >> zipcode >> temperature >> relhumidity ;
-
-		total_temp += temperature;
+		//total_temp += temperature;
     }
-    std::cout 	<< "Average temperature for zipcode '"<< filter
-    			<<"' was "<<(int) (total_temp / update_nbr) <<"F"
-    			<< std::endl;
+    //std::cout 	<< "Average temperature for zipcode '"<< filter
+    //			<<"' was "<<(int) (total_temp / update_nbr) <<"F"
+    //			<< std::endl;
     return 0;
 }

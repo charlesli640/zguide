@@ -4,18 +4,20 @@
 #include <stdio.h>
 #include <unistd.h>
 
-int main (void)
+//int main (void)
+int main (int argc, char *argv[])
 {
     printf ("Connecting to hello world server...\n");
     void *context = zmq_ctx_new ();
-    void *requester = zmq_socket (context, ZMQ_REQ);
-    zmq_connect (requester, "tcp://localhost:5555");
+    void *requester = zmq_socket (context, ZMQ_SUB);
+    const char * pubserver = (argc > 1) ? argv[1] : "tcp://localhost:5556";
+    zmq_connect (requester, pubserver);
 
     int request_nbr;
     for (request_nbr = 0; request_nbr != 10; request_nbr++) {
         char buffer [10];
         printf ("Sending Hello %d...\n", request_nbr);
-        zmq_send (requester, "Hello", 5, 0);
+        //zmq_send (requester, "Hello", 5, 0);
         zmq_recv (requester, buffer, 10, 0);
         printf ("Received World %d\n", request_nbr);
     }
