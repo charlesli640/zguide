@@ -15,7 +15,7 @@ int main (void)
     zmq_setsockopt(requester, ZMQ_IDENTITY, "ZMQ", strlen("ZMQ"));
     zmq_connect (requester, "tcp://localhost:5555");
     int request_nbr;
-    for (request_nbr = 0; request_nbr < 10; request_nbr++)
+    for (request_nbr = 0; request_nbr < 100; request_nbr++)
 	{
         char buffer [10]={0};
 		//send request msg

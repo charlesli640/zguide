@@ -1,7 +1,7 @@
 #! /bin/sh
 #
 #   Examples build helper for mingw32 on Windows
-#   Syntax: sh.exe build_mingw32 all | clean
+#   Syntax: sh.exe build_mingw32 all | clean | hwclient | hwserver | <any c program file>...
 #
 #   This controls whether we get debug or release builds
 test -z "$BOOM_MODEL" && BOOM_MODEL=debug
@@ -18,7 +18,7 @@ if [ /$1/ = /all/ ]; then
     echo "Building C examples..."
     for MAIN in `egrep -l "main \(" *.c`; do
         echo "$MAIN"
-        sh.exe ./c -l $ZMQOPTS -li ./include -ll ../libzmq_mingw32/lib -q $MAIN
+        sh.exe ./c -l $ZMQOPTS -li ./include -ll ./lib -q $MAIN
     done
 elif [ /$1/ = /clean/ ]; then
     echo "Cleaning C examples directory..."
@@ -28,7 +28,7 @@ elif [ /$1/ = /clean/ ]; then
     done
 elif [ -f $1.c ]; then
     echo "$1"
-    sh.exe ./c -l $ZMQOPTS -li  ./include -ll ../libzmq_mingw32/lib  -q $1
+    sh.exe ./c -l $ZMQOPTS -li  ./include -ll ./lib  -q $1
 else
     echo "syntax: build_mingw32 all | clean"
 fi
