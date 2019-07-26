@@ -89,9 +89,10 @@ boom_model_expand () {
 #   If not already known, detect UNIX system type.
 
 if [ -z "$UTYPE" ]; then
-    UTYPE=Generic                       #   Default system name
+    UTYPE=`uname`                       #   Default system name
     if [ -s /usr/bin/uname       ]; then UTYPE=`/usr/bin/uname`; fi
     if [ -s /bin/uname           ]; then UTYPE=`/bin/uname`;     fi
+    echo "System uname: $UTYPE"
 fi
 
 #
@@ -202,6 +203,9 @@ if [ "$CCNAME" = "gcc" ]; then
         fi
         #  Workaround for FOR-24
         STDLIBS="-lapr $STDLIBS"
+    elif [ "$UTYPE" = "MINGW32_NT-6.1" ]; then
+        # something special for Mingw32
+        echo "mingw32_nt-6.1"
     fi
 #
 #  AIX with xlc
@@ -421,6 +425,11 @@ for i in $*; do
     fi
     FILENAME=`echo $i | cut -d"." -f1`
 
+    EXEEXT=
+    if [ "$UTYPE" = "MINGW32_NT-6.1" ]; then
+       EXEEXT=".exe" 
+    fi
+ 
     #   Compile, if required
     if [ "$USECPP" = "no" ]; then
         OBJEXT=o
@@ -471,9 +480,9 @@ for i in $*; do
     if [ "$LINKUP" = "yes" ]; then
         TRACE="Linking $FILENAME"
         if [ "$USECPP" = "no" ]; then
-            COMMAND="$CCNAME $CCOPTS $FILENAME.o -o $FILENAME"
+            COMMAND="$CCNAME $CCOPTS $FILENAME.o -o ./bin/$FILENAME$EXEEXT"
         else
-            COMMAND="$CCPLUS $CCOPTS $FILENAME.opp -o $FILENAME"
+            COMMAND="$CCPLUS $CCOPTS $FILENAME.opp -o ./bin/$FILENAME$EXEEXT"
         fi
         case "$LINKTYPE" in
             gnu)

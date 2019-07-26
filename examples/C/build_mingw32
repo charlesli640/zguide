@@ -1,0 +1,34 @@
+#! /bin/sh
+#
+#   Examples build helper for mingw32 on Windows
+#   Syntax: sh.exe build_mingw32 all | clean
+#
+#   This controls whether we get debug or release builds
+test -z "$BOOM_MODEL" && BOOM_MODEL=debug
+
+ZMQOPTS='-lzmq -lczmq'
+if pkg-config libzmq --exists; then
+  ZMQOPTS=$(pkg-config --libs --cflags libczmq libzmq)
+fi
+
+CCLIBS="$CCLIBS $ZMQOPTS"
+export CCLIBS
+
+if [ /$1/ = /all/ ]; then
+    echo "Building C examples..."
+    for MAIN in `egrep -l "main \(" *.c`; do
+        echo "$MAIN"
+        sh.exe ./c -l $ZMQOPTS -li ./include -ll ../libzmq_mingw32/lib -q $MAIN
+    done
+elif [ /$1/ = /clean/ ]; then
+    echo "Cleaning C examples directory..."
+    rm -f *.o *.lst core
+    for MAIN in `egrep -l "main \(" *.c`; do
+        rm -f `basename $MAIN .c`
+    done
+elif [ -f $1.c ]; then
+    echo "$1"
+    sh.exe ./c -l $ZMQOPTS -li  ./include -ll ../libzmq_mingw32/lib  -q $1
+else
+    echo "syntax: build_mingw32 all | clean"
+fi

@@ -11,7 +11,7 @@ if [ /$1/ = /all/ ]; then
     echo "Building C++ examples..."
     for MAIN in `egrep -l "main \(" *.cpp`; do
         echo "$MAIN"
-        sh.exe ./c -p -l $ZMQOPTS -li ./include -ll ./lib -q $MAIN
+        sh.exe ./c -p -l $ZMQOPTS -li ./include -ll ./mingw32/lib -q $MAIN
     done
 elif [ /$1/ = /clean/ ]; then
     echo "Cleaning C++ examples directory..."
@@ -21,8 +21,8 @@ elif [ /$1/ = /clean/ ]; then
     done
 elif [ -f $1.cpp ]; then
     echo "$1"
-    sh.exe ./c -p -l $ZMQOPTS -li  ./include -ll ./lib  -q $1
+    sh.exe ./c -p -l $ZMQOPTS -li  ./include -ll ./mingw32/lib  -q $1
 else
-    echo "syntax: build all | clean"
+    echo "syntax: build_mingw32 all | clean"
 fi
 
